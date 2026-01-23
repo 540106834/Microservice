@@ -1,0 +1,12 @@
+2026-01-23T14:10:32.553+09:00  INFO 15856 --- [demo-svc] [main] com.jsy.demo.DemoApplication             : Starting DemoApplication v0.0.1-SNAPSHOT using Java 17.0.7 with PID 15856 (D:\git\java\demo\target\demo-0.0.1-SNAPSHOT.jar started by Shaoyong.Jin in D:\git\java\demo)
+2026-01-23T14:10:32.561+09:00  INFO 15856 --- [demo-svc] [main] com.jsy.demo.DemoApplication             : No active profile set, falling back to 1 default profile: "default"
+2026-01-23T14:10:33.740+09:00  INFO 15856 --- [demo-svc] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-01-23T14:10:33.755+09:00  INFO 15856 --- [demo-svc] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-01-23T14:10:33.756+09:00  INFO 15856 --- [demo-svc] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.50]
+2026-01-23T14:10:33.786+09:00  INFO 15856 --- [demo-svc] [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-01-23T14:10:33.787+09:00  INFO 15856 --- [demo-svc] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1170 ms
+2026-01-23T14:10:34.546+09:00  INFO 15856 --- [demo-svc] [main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-01-23T14:10:34.627+09:00  INFO 15856 --- [demo-svc] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2026-01-23T14:10:34.643+09:00  INFO 15856 --- [demo-svc] [main] com.jsy.demo.DemoApplication             : Started DemoApplication in 2.579 seconds (process running for 2.942)
+2026-01-23T14:10:39.342+09:00  INFO 15856 --- [demo-svc] [SpringApplicationShutdownHook] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2026-01-23T14:10:39.407+09:00  INFO 15856 --- [demo-svc] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete

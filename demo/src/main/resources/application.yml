@@ -1,0 +1,14 @@
+server:
+    port: 8080
+
+spring:
+    application:
+        name: demo-svc
+
+logging:
+    level:
+        root: INFO
+        com.jsy.demo: INFO
+    file:
+        name: logs/demo-svc.log
+
