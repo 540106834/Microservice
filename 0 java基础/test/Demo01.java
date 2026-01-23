@@ -1,18 +1,17 @@
 public class Demo01 {
 
-    static boolean checkServer(int cpu) {
-        return cpu < 80;
+    static void api() {
+        try {
+            Thread.sleep(300);
+        } catch (Exception e) {
+        }
     }
 
     public static void main(String[] args) {
-        int[] servers = {45, 66, 90, 30};
+        long start = System.currentTimeMillis();
+        api();
+        long end = System.currentTimeMillis();
 
-        for (int cpu : servers) {
-            if (checkServer(cpu)) {
-                System.out.println(cpu + "% OK");
-            } else {
-                System.out.println(cpu + "% ALERT");
-            }
-        }
+        System.out.println("cost = " + (end - start) + " ms");
     }
 }
