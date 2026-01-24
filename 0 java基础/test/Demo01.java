@@ -1,17 +1,13 @@
+import java.time.LocalTime;
+
 public class Demo01 {
 
-    static void api() {
-        try {
-            Thread.sleep(300);
-        } catch (Exception e) {
-        }
+    public String now() {
+        return LocalTime.now().toString();
     }
 
     public static void main(String[] args) {
-        long start = System.currentTimeMillis();
-        api();
-        long end = System.currentTimeMillis();
-
-        System.out.println("cost = " + (end - start) + " ms");
+        Demo01 timeService = new Demo01();
+        System.out.println(timeService.now());
     }
 }
