@@ -1,0 +1,271 @@
+这一阶段，像是给你的服务**装上记忆**。
+前面几阶段服务会思考、会判断，但不记事。现在它开始落笔成册 
+
+---
+
+# 第五阶段：数据访问 / ORM（接口连上数据库）
+
+##  阶段目标（运维 + 接口视角）
+
+完成后你应该能：
+
+* 看懂数据库表 ↔ Java 类的映射关系
+* 用 **ORM** 而不是手写 JDBC
+* 在 Service 中 **读取 / 写入数据**
+* 保持接口返回结构统一（`Result` 不乱）
+
+---
+
+## 一、先建立正确的数据库世界观
+
+### 运维必懂一句话
+
+> **数据库 = 状态源，不是逻辑源**
+
+* 判断逻辑在 Service
+* 数据只负责存和取
+
+---
+
+## 二、Entity：数据库在 Java 里的“影子”
+
+### 1️ 示例表（概念级）
+
+```sql
+CREATE TABLE user (
+  id BIGINT PRIMARY KEY,
+  username VARCHAR(50),
+  status INT,
+  create_time DATETIME
+);
+```
+
+### 2️ 对应 Entity
+
+```java
+public class User {
+
+    private Long id;
+    private String username;
+    private Integer status;
+    private LocalDateTime createTime;
+
+    // getter / setter
+}
+```
+
+ 记住这个映射节奏：
+
+| 数据库      | Java          |
+| -------- | ------------- |
+| BIGINT   | Long          |
+| VARCHAR  | String        |
+| INT      | Integer       |
+| DATETIME | LocalDateTime |
+
+---
+
+## 三、数据访问层：Repository / Mapper
+
+你会遇到两条路，**选一条先走**。
+
+---
+
+### 路线 A：MyBatis（运维更友好）
+
+#### 1️ Mapper 接口
+
+```java
+@Mapper
+public interface UserMapper {
+
+    User selectById(Long id);
+
+    int insert(User user);
+}
+```
+
+#### 2️ SQL（XML 或注解）
+
+```xml
+<select id="selectById" resultType="User">
+    select * from user where id = #{id}
+</select>
+```
+
+ 运维视角：
+
+* SQL 明摆着
+* 好排查
+* 好和 DBA 对话
+
+---
+
+### 路线 B：Spring Data JPA（开发友好）
+
+```java
+public interface UserRepository
+        extends JpaRepository<User, Long> {
+
+    List<User> findByStatus(Integer status);
+}
+```
+
+📌 特点：
+
+* 几乎不写 SQL
+* 规则生成查询
+* 但出问题时不好定位
+
+---
+
+## 四、Service：数据访问只能从这里进出
+
+### ❌ 错误
+
+Controller 直接查数据库
+
+### ✅ 正确
+
+```java
+@Service
+public class UserService {
+
+    private final UserMapper userMapper;
+
+    public UserService(UserMapper userMapper) {
+        this.userMapper = userMapper;
+    }
+
+    public User getUser(Long id) {
+        return userMapper.selectById(id);
+    }
+}
+```
+
+---
+
+## 五、DTO：别把 Entity 直接扔给接口
+
+### 为什么？
+
+* Entity = 数据库结构
+* DTO = 接口契约
+* 两者不能绑死
+
+---
+
+### 1️ DTO 示例
+
+```java
+public class UserDTO {
+
+    private Long id;
+    private String username;
+}
+```
+
+### 2️ 转换（手写即可）
+
+```java
+private UserDTO toDTO(User user) {
+    UserDTO dto = new UserDTO();
+    dto.setId(user.getId());
+    dto.setUsername(user.getUsername());
+    return dto;
+}
+```
+
+📌 初期别急着 MapStruct
+手写最能练脑子
+
+---
+
+## 六、Controller：组合最终返回
+
+```java
+@GetMapping("/user/{id}")
+public Result<UserDTO> getUser(@PathVariable Long id) {
+
+    User user = userService.getUser(id);
+    if (user == null) {
+        return Result.error("NOT FOUND");
+    }
+
+    return Result.success(toDTO(user));
+}
+```
+
+返回：
+
+```json
+{
+  "code": 200,
+  "message": "success",
+  "data": {
+    "id": 1,
+    "username": "admin"
+  }
+}
+```
+
+---
+
+## 七、CRUD 典型运维练习（强烈建议）
+
+### ✅ 练习 1：接口访问日志表
+
+* 表：`api_log`
+* 字段：path / method / cost / time
+
+### ✅ 练习 2：健康检查历史表
+
+* 每次 health 调用插一条记录
+* 状态 UP / DOWN
+
+### ✅ 练习 3：分页查询
+
+* 最近 10 条
+* order by time desc
+
+---
+
+## 八、常见坑位（真实现场）
+
+| 问题         | 原因         |
+| ---------- | ---------- |
+| 接口 500     | Mapper 没扫到 |
+| 返回空        | 字段名不匹配     |
+| 时间报错       | 时区 / 类型    |
+| SQL 正常但接口错 | DTO 漏字段    |
+
+---
+
+## 九、这一阶段完成后的运维价值
+
+你已经可以：
+
+* 看懂微服务的数据流
+* 排查：
+
+  * DB 连接
+  * SQL 慢
+  * 数据异常
+* 自己写：
+
+  * 运维审计表
+  * 接口日志
+  * 健康记录
+
+---
+
+## 下一阶段 
+
+**第六阶段：配置中心 & 环境切换（yml / profile / Nacos）**
+
+* 不同环境不同 DB
+* 不重启切配置
+* 运维主导系统行为
+
+如果你愿意，下一步我可以直接给你一套：
+ **运维友好型 MyBatis + HealthRecord 实战骨架**
