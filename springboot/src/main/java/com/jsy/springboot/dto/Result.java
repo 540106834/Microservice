@@ -1,27 +1,39 @@
 package com.jsy.springboot.dto;
 
-public class Result {
+public class Result<T> {
 
     private int code;
     private String message;
-    private Object data;
+    private T data;
 
-    public static Result success(Object data) {
-        Result r = new Result();
-        r.code = 200;
-        r.message = "success";
-        r.data = data;
-        return r;
+    public Result() {
     }
 
-    public static Result error(String msg) {
-        Result r = new Result();
-        r.code = 400;
-        r.message = msg;
-        return r;
+    public Result(int code, String message, T data) {
+        this.code = code;
+        this.message = message;
+        this.data = data;
     }
 
-    public int getCode() { return code; }
-    public String getMessage() { return message; }
-    public Object getData() { return data; }
+    // 成功
+    public static <T> Result<T> success(T data) {
+        return new Result<>(0, "success", data);
+    }
+
+    // 失败
+    public static <T> Result<T> error(String message) {
+        return new Result<>(-1, message, null);
+    }
+
+    public int getCode() {
+        return code;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public T getData() {
+        return data;
+    }
 }
