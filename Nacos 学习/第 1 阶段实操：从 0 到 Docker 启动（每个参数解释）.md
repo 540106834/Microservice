@@ -228,3 +228,111 @@ NACOS_NAMING_ENABLED: "false"
 * 🧠 **解释 Nacos 哪些表是“命门”，如何备份不踩雷**
 
 你点一个，我继续。
+
+
+明白，你想用 **Docker Compose 部署 Nacos** 并 **初始化数据库**，我给你整理一个完整方案，适用于 **Nacos 2.x/3.x + MySQL**：
+
+---
+
+## 1️⃣ 准备 MySQL 数据库
+
+1. **创建数据库**
+
+```sql
+CREATE DATABASE nacos_config CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
+
+2. **执行初始化 SQL**
+
+* 如果你在宿主机上已有 `mysql-schema.sql`（Nacos 官方提供，3.1.1 版本在 `distribution/conf/mysql-schema.sql`）：
+
+```bash
+mysql -h <MYSQL_HOST> -u root -p nacos_config < mysql-schema.sql
+```
+
+* 这个脚本会创建所有 Nacos 需要的表，包括 `config_info`、`tenant_info`、`users` 等。
+
+---
+
+## 2️⃣ Docker Compose 配置示例
+
+创建 `docker-compose.yml`：
+
+```yaml
+version: "3.9"
+
+services:
+  nacos-mysql:
+    image: mysql:8.0.30
+    container_name: nacos-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: nacos_config
+      MYSQL_USER: nacos
+      MYSQL_PASSWORD: nacos123
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql-data:/var/lib/mysql
+      - ./mysql-schema.sql:/docker-entrypoint-initdb.d/mysql-schema.sql
+    command:
+      --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
+  nacos:
+    image: nacos/nacos-server:2.4.1
+    container_name: nacos
+    environment:
+      MODE: "standalone"
+      SPRING_DATASOURCE_PLATFORM: "mysql"
+      MYSQL_SERVICE_HOST: "nacos-mysql"
+      MYSQL_SERVICE_PORT: "3306"
+      MYSQL_SERVICE_DB_NAME: "nacos_config"
+      MYSQL_SERVICE_USER: "nacos"
+      MYSQL_SERVICE_PASSWORD: "nacos123"
+    ports:
+      - "8848:8848"
+    depends_on:
+      - nacos-mysql
+```
+
+### ✅ 关键点说明
+
+1. **初始化数据库**
+
+   * MySQL 容器会自动执行 `docker-entrypoint-initdb.d` 下的 SQL 脚本。
+   * 所以把 `mysql-schema.sql` 挂载进去即可自动建表。
+
+2. **Nacos 配置数据库**
+
+   * 通过环境变量 `SPRING_DATASOURCE_PLATFORM=mysql` 告诉 Nacos 使用 MySQL
+   * `MYSQL_SERVICE_*` 系列变量告诉 Nacos如何连接数据库
+
+3. **注意字符集**
+
+   * MySQL 要用 `utf8mb4`，否则存储中文或特殊字符可能报错
+
+---
+
+## 3️⃣ 启动容器
+
+```bash
+docker-compose up -d
+```
+
+* 先启动 MySQL，初始化数据库
+* 然后启动 Nacos
+* 访问 [http://localhost:8848/nacos](http://localhost:8848/nacos)
+
+---
+
+## 4️⃣ 验证
+
+1. 登录 Nacos UI，默认账号 `nacos/nacos`
+2. UI 新建配置时，Tenant 可选择 `public` 或自己创建的租户
+3. 如果使用客户端订阅配置，必须指定 `namespace` 对应 Tenant
+
+---
+
+如果你需要，我可以帮你写一个 **完全开箱即用的 Docker Compose 示例**，支持 **Nacos 3.1.1 + MySQL 8 + 自动初始化数据库 + 公共租户 + 日志卷挂载**。
+
+你希望我直接写吗？
