@@ -73,6 +73,7 @@ services:
       - mysql
     ports:
       - "8848:8848"
+      - "9848:9848"
     environment:
       - MODE=standalone
 
