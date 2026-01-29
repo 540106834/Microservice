@@ -104,14 +104,10 @@ services:
 openssl rand -base64 32
 
 ```
-在nacos-mysql.sql 中添加以下内容，添加账号：
+在nacos-mysql.sql 中添加以下内容：
 ```bash
--- 创建 nacos 用户（如果不存在）
 CREATE USER IF NOT EXISTS 'nacos'@'%' IDENTIFIED BY 'nacos123';
-
--- 授权 nacos_config 数据库
 GRANT ALL PRIVILEGES ON nacos_config.* TO 'nacos'@'%';
-
 ```
 ---
 
@@ -129,26 +125,16 @@ docker logs -f nacos
 INFO Nacos started successfully in stand alone mode. use external storage
 ```
 
-你要看到类似：
-
-```
-Datasource: mysql
-Nacos started successfully
-```
-
-不是这句，说明数据库没连上。
-
----
 
 ## 五、访问 & 登录
 
-### 1️⃣ Web 控制台
+### 1️ Web 控制台
 
 ```
 http://宿主机IP:8848/nacos
 ```
 
-### 2️⃣ 默认账号
+### 2️ 默认账号
 
 ```
 username: nacos
@@ -212,12 +198,9 @@ show tables;
 spring.application.name=demo-svc
 
 # Boot 2.4+ 必须
-spring.config.import=nacos:
+spring.config.import=nacos:demo-svc
 
-# Nacos 地址（注意不是 config.server-addr）
-spring.cloud.nacos.server-addr=100.100.3.147:8848
-
-# 鉴权
+spring.cloud.nacos.config.server-addr=172.17.17.80:8848
 spring.cloud.nacos.username=nacos
 spring.cloud.nacos.password=nacos
 
