@@ -158,6 +158,35 @@ password: nacos
 
 ---
 
+发布配置：
+```bash
+curl -X POST "http://100.100.3.147:8848/nacos/v1/cs/configs?dataId=demo-svc&group=DEFAULT_GROUP&content=server.port=8081"
+
+curl -X POST "http://100.100.3.147:8848/nacos/v1/cs/configs" \
+  -d "dataId=demo-svc.properties" \
+  -d "group=DEFAULT_GROUP" \
+  -d "content=server.port=8081
+test.value=hello-from-curl" \
+  -d "type=properties" \
+  -d "accessToken=你的token"
+
+```
+获取配置：
+```bash
+curl -X GET "http://100.100.3.147:8848/nacos/v1/cs/configs?dataId=demo-svc&group=DEFAULT_GROUP" 
+{"timestamp":"2026-01-29T17:34:13.957+09:00","status":403,"error":"Forbidden","message":"user not found!","path":"/nacos/v1/cs/configs"}
+
+curl -G "http://100.100.3.147:8848/nacos/v1/cs/configs" \
+  --data-urlencode "dataId=demo-svc" \
+  --data-urlencode "group=DEFAULT_GROUP" \
+  --data-urlencode "accessToken=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuYWNvcyIsImV4cCI6MTc2OTY5NTEzNn0.kKFpCuIxlJ6VLTOBxWinwpRv7YxBwqGbkj_Cn_pUFl8"
+
+```
+```bash
+curl -X POST "http://100.100.3.147:8848/nacos/v1/auth/login"  -d "username=nacos&password=nacos"
+eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuYWNvcyIsImV4cCI6MTc2OTY5NTEzNn0.kKFpCuIxlJ6VLTOBxWinwpRv7YxBwqGbkj_Cn_pUFl8
+```
+
 ## 六、验证是否真的在用 MySQL（重要）
 
 进 MySQL 容器：
@@ -176,11 +205,33 @@ show tables;
 
 ---
 
+
+客户端application.properties 配置
+```t
+spring.application.name=demo-svc
+
+# Boot 2.4+ 必须
+spring.config.import=nacos:
+
+# Nacos 地址（注意不是 config.server-addr）
+spring.cloud.nacos.server-addr=100.100.3.147:8848
+
+# 鉴权
+spring.cloud.nacos.username=nacos
+spring.cloud.nacos.password=nacos
+
+# 配置中心
+spring.cloud.nacos.config.enabled=true
+spring.cloud.nacos.config.file-extension=properties
+spring.cloud.nacos.config.group=DEFAULT_GROUP
+spring.cloud.nacos.config.namespace=public
+
+```
 ## 七、为什么生产一定要 MySQL？
 
 一句话版：
 
-> **不用 MySQL，Nacos 就是“健忘症患者” 🧠**
+> **不用 MySQL，Nacos 就是“健忘症患者” **
 
 技术原因：
 
