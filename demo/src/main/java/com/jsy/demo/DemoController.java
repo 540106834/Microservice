@@ -29,7 +29,11 @@ public class DemoController {
     public Collection<Task> list() {
         return taskStore.values();
     }
-
+    
+    @GetMapping("/health")
+    public String health() {
+        return "200 UP";
+    }
     // READ - by id
     @GetMapping("/{id}")
     public Task get(@PathVariable Long id) {
