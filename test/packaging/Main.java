@@ -1,7 +1,11 @@
 public class Main {
     public static void main(String[] args) {
-        JvmProcess jp = new JvmProcess(20);
-        System.out.println("the memory is :" + jp.getMemory());
-        jp.start();
+        Host host = new Host();
+
+        BaseService web = new WebService("gateway",8080);
+        BaseService job = new JobService("sync-job",9000);
+
+        host.startService(web);
+        host.startService(job);
     }
 }
