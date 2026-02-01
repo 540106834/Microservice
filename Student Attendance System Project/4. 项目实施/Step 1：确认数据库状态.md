@@ -1,6 +1,21 @@
 好的，我们来**逐字段拆解**你这张 `attendance_raw` 表，把每个字段的作用、为什么选这个数据类型，以及设计背后的逻辑都讲清楚。
 这是工程级必备思维：看到字段就能理解整个业务行为。
 
+```bash
+CREATE DATABASE IF NOT EXISTS smart_attendance 
+DEFAULT CHARACTER SET utf8mb4 
+COLLATE utf8mb4_general_ci;
+use smart_attendane;
+
+
+CREATE USER 'attend'@'%' IDENTIFIED BY '123456';
+GRANT ALL PRIVILEGES ON smart_attendance.* TO 'attend'@'%';
+SHOW GRANTS FOR 'attend'@'%';
+
+-- 刷新权限，使设置立即生效
+FLUSH PRIVILEGES;
+```
+
 ---
 
 # 📝 表结构总览
