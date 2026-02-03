@@ -7,12 +7,10 @@ DEFAULT CHARACTER SET utf8mb4
 COLLATE utf8mb4_general_ci;
 use smart_attendane;
 
-
-CREATE USER 'attend'@'%' IDENTIFIED BY '123456';
+CREATE USER 'user'@'%' IDENTIFIED BY 'user123';
 GRANT ALL PRIVILEGES ON smart_attendance.* TO 'attend'@'%';
-SHOW GRANTS FOR 'attend'@'%';
+SHOW GRANTS FOR 'user'@'%';
 
--- 刷新权限，使设置立即生效
 FLUSH PRIVILEGES;
 ```
 

@@ -20,9 +20,9 @@ public class AttendanceRawController {
     /**
      * 测试接口
      */
-    @GetMapping("/ping")
-    public String ping() {
-        return "ok";
+    @GetMapping("/health")
+    public String health() {
+        return "200 ok service is running";
     }
 
     /**
